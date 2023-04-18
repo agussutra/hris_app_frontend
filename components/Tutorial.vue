@@ -56,6 +56,7 @@
             {{ message }}, {{ name }} 
         </a>
         </div>
+        <input type="text" name="name" id="" v-model="name">
       </div>
       
     </div>
