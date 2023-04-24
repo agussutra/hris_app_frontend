@@ -51,7 +51,7 @@
                                 0
                             </div>
                         </div>
-                        <NuxtLink :to="{name: 'employees-create'}">
+                        <NuxtLink :to="{name: 'companies-id-employees-create'}">
                             <img src="/assets/svgs/ric-plus.svg" alt="">
                         </NuxtLink>
                     </div>
@@ -64,7 +64,7 @@
                                 0
                             </div>
                         </div>
-                        <NuxtLink :to="{name: 'teams-create'}">
+                        <NuxtLink :to="{name: 'companies-id-employees-team'}">
                             <img src="/assets/svgs/ric-plus.svg" alt="">
                         </NuxtLink>
                     </div>

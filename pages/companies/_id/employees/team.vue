@@ -12,15 +12,15 @@
                 <img src="/assets/images/user-f-1.png" width="70" alt="">
                 <div>
                     <div class="text-lg font-semibold">
-                        Andini Danna
+                        {{ this.$store.state.employee.name }}
                     </div>
                     <p class="text-base text-grey">
-                        ke@manasihhbang.com
+                        {{ this.$store.state.employee.email }}
                     </p>
                 </div>
             </div>
             <p class="text-right text-grey">
-                Product Designer
+                {{ this.$store.state.employee.role_name }}
             </p>
         </div>
 
@@ -39,56 +39,24 @@
             </div>
 
             <form>
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3 mb-[50px]">
-                    <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-                        <input type="radio" name="productGrowth" id="productGrowth"
+                <p v-if="$fetchState.pending"></p>
+                <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3 mb-[50px]">
+                    <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0" v-for="team in teams.data.result.data">
+                        <input type="radio" name="team_id" id="productGrowth" @click="updateTeamId" :value="team.id"
                             class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none">
-                        <img src="/assets/svgs/ric-box.svg" alt="">
+                        <img :src="team.icon" class="w-24" alt="">
                         <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                            Product Growth
+                           {{ team.name }}
                         </div>
                         <p class="text-center text-grey">
-                            810 People
-                        </p>
-                    </div>
-                    <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-                        <input type="radio" name="marketing" id="marketing"
-                            class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none">
-                        <img src="/assets/svgs/ric-target.svg" alt="">
-                        <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                            Marketing
-                        </div>
-                        <p class="text-center text-grey">
-                            15,810 People
-                        </p>
-                    </div>
-                    <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-                        <input type="radio" name="globalization" id="globalization"
-                            class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none">
-                        <img src="/assets/svgs/ric-globe.svg" alt="">
-                        <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                            Globalization
-                        </div>
-                        <p class="text-center text-grey">
-                            300 People
-                        </p>
-                    </div>
-                    <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-                        <input type="radio" name="gamification" id="gamification"
-                            class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none">
-                        <img src="/assets/svgs/ric-award.svg" alt="">
-                        <div class="mt-6 mb-1 font-semibold text-center text-dark">
-                            Gamification
-                        </div>
-                        <p class="text-center text-grey">
-                            25 People
+                            {{ team.employees_count }} People
                         </p>
                     </div>
                 </div>
                 <div class="flex justify-center">
-                    <a href="employees.html" id="continueBtn" class=" btn btn-primary">
+                    <button @click="createEmployee()" type="button" id="continueBtn" class=" btn btn-primary">
                         Continue
-                    </a>
+                    </button>
                 </div>
             </form>
         </section>
@@ -98,5 +66,60 @@
 export default {
     layout: 'form',
     middleware: 'auth',
+    data() {
+        return {
+            teams: [],
+        }
+    },
+    computed: {
+        team_id() {
+            return this.$store.state.employee.team_id
+        }
+    },
+    async fetch() {
+        this.teams = await this.$axios.get('/team', {
+            params: {
+                company_id: this.$route.params.id,
+                limit: 100,
+            }
+        });
+    },
+    methods: {
+        updateTeamId(event){
+            this.$store.commit('employee/updateTeamId', event.target.value)
+        },
+        async createEmployee(){
+            try {
+                let response = await this.$axios.post('employee', {
+                    'name': this.$store.state.employee.name,
+                    'email': this.$store.state.employee.email,
+                    'gender': this.$store.state.employee.gender,
+                    'age': this.$store.state.employee.age,
+                    'phone': this.$store.state.employee.phone,
+                    'role_id': this.$store.state.employee.role_id,
+                    'team_id': this.$store.state.employee.team_id
+                })
+
+                // clear data vuex
+                this.$store.commit('employee/updateName','')
+                this.$store.commit('employee/updateEmail','')
+                this.$store.commit('employee/updateGender','')
+                this.$store.commit('employee/updateAge','')
+                this.$store.commit('employee/updatePhone','')
+                this.$store.commit('employee/updateRoleId','')
+                this.$store.commit('employee/updateRoleName','')
+                this.$store.commit('employee/updateTeamId','')
+                
+                // redirect ke halaman employee
+                this.$router.push({
+                    name: 'companies-id-employees', 
+                })
+
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        },
+    }
 }
 </script>

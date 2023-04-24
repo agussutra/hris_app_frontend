@@ -32,10 +32,10 @@
             </div>
             <div class="flex flex-col gap-4">
                 <div class="text-sm text-grey">Others</div>
-                <a href="#" class="nav-link">
+                <button @click="$auth.logout()" class="nav-link">
                     <img src="/assets/svgs/ic-signout.svg" alt="">
                     Logout
-                </a>
+                </button>
             </div>
         </div>
     </div>
